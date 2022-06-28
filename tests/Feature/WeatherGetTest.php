@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Services\WeatherApis\AccuWeatherApi;
 use App\Services\WeatherApis\OpenMeteoApi;
+use App\Services\WeatherApis\WeatherApiApi;
 use Tests\TestCase;
 
 class WeatherGetTest extends TestCase
@@ -33,6 +34,14 @@ class WeatherGetTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $weather = app(AccuWeatherApi::class)->getByCity('moscow');
+
+        $this->assertGreaterThan(1, count($weather));
+    }
+
+    public function testWeatherApiApi()
+    {
+        $this->withoutExceptionHandling();
+        $weather = app(WeatherApiApi::class)->getByCity('moscow');
 
         $this->assertGreaterThan(1, count($weather));
     }

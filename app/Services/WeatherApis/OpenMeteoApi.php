@@ -3,6 +3,8 @@
 namespace App\Services\WeatherApis;
 
 use App\Services\CityCoordinatesApi;
+use App\ValueObjects\DailyWeatherCollection;
+use App\ValueObjects\OneDayWeather;
 use Illuminate\Support\Facades\Http;
 
 class OpenMeteoApi implements WeatherSource
@@ -14,27 +16,42 @@ class OpenMeteoApi implements WeatherSource
         $this->cityCoordinatesApi = $cityCoordinatesApi;
     }
 
-    public function getByCity(string $city): array
+    public function getByCity(string $city): DailyWeatherCollection
     {
         $coordinates = $this->cityCoordinatesApi->getCoordinates($city);
 
-        return $this->getWeatherCords($coordinates);
+        $rawData = $this->getWeatherByCords($coordinates);
+
+        return $this->makeWeatherCollection($rawData);
     }
 
-    public function getWeatherCords(array $coords): array
+    public function makeWeatherCollection(array $rawData): DailyWeatherCollection
     {
-        $response = Http::get('https://api.open-meteo.com/v1/forecast', [
+        $result = new DailyWeatherCollection();
+
+        foreach ($rawData['temperature_2m_max'] as $key => $temp) {
+            $day = new OneDayWeather();
+            $day->setDate($rawData['time'][$key]);
+            $day->setTemp($temp);
+
+            $result->addDay($day);
+        }
+
+        return $result;
+    }
+
+    public function getWeatherByCords(array $coords): array
+    {
+        return Http::get('https://api.open-meteo.com/v1/forecast', [
             'longitude' => $coords['lon'],
             'latitude' => $coords['lat'],
             'daily' => 'temperature_2m_max',
             'timezone' => 'UTC'
-        ]);
+        ])->json('daily');
+    }
 
-        $result = [];
-        foreach ($response->json('daily.temperature_2m_max') as $key => $temp) {
-            $result[$response->json("daily.time.$key")] = $temp;
-        }
-
-        return $result;
+    public function getSourceName(): string
+    {
+        return 'open-meteo.com';
     }
 }

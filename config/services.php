@@ -32,6 +32,7 @@ return [
 
     'weather' => [
         'accu-weather' => env('ACCW_KEY'),
+        'weather-api' => env('WEATHERAPI_KEY'),
     ],
 
     'misc' => [
