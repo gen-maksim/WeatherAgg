@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RequestStatController;
 use App\Http\Controllers\WeatherApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,3 +17,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/weather/{city}', [WeatherApiController::class, 'getByCity']);
+Route::get('/popular', [RequestStatController::class, 'getPopularEndpoint']);

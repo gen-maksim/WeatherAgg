@@ -5,7 +5,7 @@ networks:
     driver: bridge
 
 volumes:
-  pgsql_data:
+  mongo_data:
     driver: local
   pgsql_test_data:
     driver: local
@@ -41,19 +41,19 @@ services:
     networks:
       - app_network
 
-  database:
-    container_name: weather_app_db
-    image: postgres:latest
+  mongo:
+    container_name: weather_mongodb
+    image: mongo:latest
     tty: true
     networks:
       - app_network
-    environment:
-      POSTGRES_PASSWORD: secret
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: ${DB_MONGO_USERNAME}
+#      MONGO_INITDB_ROOT_PASSWORD: ${DB_MONGO_PASSWORD}
     ports:
-      - "5434:5432"
+      - ${DB_EXTERNAL_PORT_MONGO:-27017}:${DB_PORT}
     volumes:
-      - pgsql_data:/var/lib/mysql
-      - .docker/db:/docker-entrypoint-initdb.d
+      - mongo_data:/data/db
 
   database_test:
     container_name: weather_app_db_test

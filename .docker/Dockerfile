@@ -1,14 +1,20 @@
-FROM php:7.4-fpm
+FROM php:8.0.11-fpm
 
 ARG user
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev
+    libpq-dev \
+    curl \
+    git \
+    zip \
+    unzip
 
 RUN docker-php-ext-install pdo_pgsql \
-    && docker-php-ext-enable pdo_pgsql
+    && pecl install mongodb \
+    && docker-php-ext-enable pdo_pgsql \
+    && docker-php-ext-enable mongodb
 
 
 RUN useradd -G www-data,root -d /home/$user $user
