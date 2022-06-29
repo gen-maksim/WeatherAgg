@@ -15,7 +15,7 @@ class RequestStatController extends Controller
     {
         $attributes = $request->validated();
 
-        $popular = $this->statService->getPopular($attributes['mode'] ?? 'day', $attributes['limit'] ?? 10);
+        $popular = $this->statService->getPopular($attributes['mode'] ?? 'all', $attributes['limit'] ?? 10);
 
         return response()->json(EndpointStatResource::collection($popular));
     }

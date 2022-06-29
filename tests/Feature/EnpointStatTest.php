@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\RequestStat;
 use App\Services\RequestStatService;
+use Database\Seeders\RequestStatSeeder;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Carbon;
@@ -11,7 +12,6 @@ use Tests\TestCase;
 
 class EnpointStatTest extends TestCase
 {
-    use DatabaseMigrations;
     use WithFaker;
 
     public function testEndpointReturnsPopular(): void
@@ -45,7 +45,7 @@ class EnpointStatTest extends TestCase
         $lastEndpoint = implode('-', $this->faker->words());
         RequestStat::factory(1)->create(['endpoint' => $lastEndpoint]);
 
-        $result = $service->getPopular('day', 10);
+        $result = $service->getPopular('all', 10);
         $this->assertCount(3, $result);
         $this->assertCount(2, $result[0]);
         $this->assertEquals($lastEndpoint, array_pop($result)['_id']);

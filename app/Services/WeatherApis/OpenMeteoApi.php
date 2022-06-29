@@ -10,12 +10,7 @@ use Illuminate\Support\Facades\Http;
 
 class OpenMeteoApi extends BaseWeatherApi
 {
-    protected CityCoordinatesApi $cityCoordinatesApi;
-
-    public function __construct(CityCoordinatesApi $cityCoordinatesApi)
-    {
-        $this->cityCoordinatesApi = $cityCoordinatesApi;
-    }
+    public function __construct(protected CityCoordinatesApi $cityCoordinatesApi) {}
 
     /**
      * @throws RequestException

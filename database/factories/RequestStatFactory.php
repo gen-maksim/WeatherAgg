@@ -8,8 +8,9 @@ class RequestStatFactory extends Factory
 {
     public function definition(): array
     {
+
         return [
-            'endpoint' => implode('-', $this->faker->words()),
+            'endpoint' => implode('-', $this->faker->words(2)),
             'date' => $this->faker->date()
         ];
     }
