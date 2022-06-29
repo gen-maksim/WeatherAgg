@@ -9,7 +9,7 @@ class PopularEndpointRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'mode' => ['sometimes', 'string', 'in:month,week,day'],
+            'mode' => ['sometimes', 'string', 'in:month,week,day,all'],
             'limit' => ['sometimes', 'integer'],
         ];
     }

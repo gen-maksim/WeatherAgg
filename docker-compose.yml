@@ -7,6 +7,8 @@ networks:
 volumes:
   mongo_data:
     driver: local
+  mongo_test_data:
+    driver: local
   pgsql_test_data:
     driver: local
   vendor_data:
@@ -20,19 +22,17 @@ services:
         user: user
       context: ./
       dockerfile: .docker/Dockerfile
-    depends_on:
-      - database
-      - database_test
     tty: true
     networks:
       - app_network
     volumes:
       - .:/var/www
-#      - .docker/php:/var/www/docker-php-entrypoint
 
   nginx:
     image: nginx:alpine
     container_name: weather_nginx
+    depends_on:
+      - app
     ports:
       - "8000:80"
     volumes:
@@ -45,25 +45,24 @@ services:
     container_name: weather_mongodb
     image: mongo:latest
     tty: true
+    depends_on:
+      - app
     networks:
       - app_network
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: ${DB_MONGO_USERNAME}
-#      MONGO_INITDB_ROOT_PASSWORD: ${DB_MONGO_PASSWORD}
     ports:
       - ${DB_EXTERNAL_PORT_MONGO:-27017}:${DB_PORT}
     volumes:
       - mongo_data:/data/db
 
-  database_test:
-    container_name: weather_app_db_test
-    image: postgres:latest
+  mongo_test:
+    container_name: weather_mongodb_test
+    image: mongo:latest
     tty: true
+    depends_on:
+      - app
     networks:
       - app_network
-    environment:
-      POSTGRES_PASSWORD: secret
     ports:
-      - "5435:5432"
+      - ${DB_EXTERNAL_PORT_MONGO_TEST:-27018}:${DB_PORT}
     volumes:
-      - pgsql_test_data:/var/lib/mysql
+      - mongo_test_data:/data/db

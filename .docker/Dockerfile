@@ -1,4 +1,4 @@
-FROM php:8.0.11-fpm
+FROM php:8.1-fpm
 
 ARG user
 
@@ -18,6 +18,8 @@ RUN docker-php-ext-install pdo_pgsql \
 
 
 RUN useradd -G www-data,root -d /home/$user $user
+COPY ./.docker/app-start /usr/local/bin/app-start
+RUN chmod +x /usr/local/bin/app-start;
 
 RUN mkdir -p /home/$user/.composer \
     && chown -R $user:$user /home/$user
@@ -26,3 +28,5 @@ RUN mkdir -p /home/$user/.composer \
 WORKDIR /var/www
 
 USER $user
+
+CMD app-start

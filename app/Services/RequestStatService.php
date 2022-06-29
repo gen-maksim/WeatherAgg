@@ -17,8 +17,29 @@ class RequestStatService
 
     public function getPopular(string $mode, int $limit): array
     {
-        return RequestStat::raw(static function ($col) use ($mode, $limit) {
-            return $col->aggregate([
+        if ($mode === 'all') {
+            $match = [];
+        } else {
+            switch ($mode) {
+                case 'day': $date = Carbon::now()->subDay()->toISOString();
+                break;
+                case 'week': $date = Carbon::now()->subWeek()->toISOString();
+                break;
+                case 'month': $date = Carbon::now()->subMonth()->toISOString();
+                break;
+            }
+
+            $match = [[
+                '$match'=> [
+                    'date' => [
+                        '$gte' => $date
+                    ]
+                ]
+            ]];
+        }
+
+        return RequestStat::raw(static function ($col) use ($match, $limit) {
+            $agg = [
                 [
                     '$group' => [
                         '_id' => '$endpoint',
@@ -35,7 +56,13 @@ class RequestStatService
                 [
                     '$limit' => $limit
                 ]
-            ]);
+            ];
+
+            if (!empty($match)) {
+                $agg = array_merge($match, $agg);
+            }
+
+            return $col->aggregate($agg);
         })->toArray();
     }
 }

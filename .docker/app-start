@@ -1,0 +1,9 @@
+#!/bin/sh
+
+####################---Install Composer---####################
+composer install -vvv --no-cache --no-interaction
+
+echo '###---Running tests ...'
+php artisan test --parallel
+
+php-fpm
