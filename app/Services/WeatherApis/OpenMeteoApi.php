@@ -7,7 +7,7 @@ use App\ValueObjects\DailyWeatherCollection;
 use App\ValueObjects\OneDayWeather;
 use Illuminate\Support\Facades\Http;
 
-class OpenMeteoApi implements WeatherSource
+class OpenMeteoApi extends BaseWeatherApi
 {
     protected CityCoordinatesApi $cityCoordinatesApi;
 
@@ -16,7 +16,7 @@ class OpenMeteoApi implements WeatherSource
         $this->cityCoordinatesApi = $cityCoordinatesApi;
     }
 
-    public function getByCity(string $city): DailyWeatherCollection
+    protected function tryGetWeather(string $city): DailyWeatherCollection
     {
         $coordinates = $this->cityCoordinatesApi->getCoordinates($city);
 

@@ -6,9 +6,9 @@ use App\ValueObjects\DailyWeatherCollection;
 use App\ValueObjects\OneDayWeather;
 use Illuminate\Support\Facades\Http;
 
-class WeatherApiApi implements WeatherSource
+class WeatherApiApi extends BaseWeatherApi
 {
-    public function getByCity(string $city): DailyWeatherCollection
+    protected function tryGetWeather(string $city): DailyWeatherCollection
     {
         $rawData = $this->getWeatherByCity($city);
 

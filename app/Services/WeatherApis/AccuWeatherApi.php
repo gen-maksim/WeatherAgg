@@ -6,9 +6,9 @@ use App\ValueObjects\DailyWeatherCollection;
 use App\ValueObjects\OneDayWeather;
 use Illuminate\Support\Facades\Http;
 
-class AccuWeatherApi implements WeatherSource
+class AccuWeatherApi extends BaseWeatherApi
 {
-    public function getByCity(string $city): DailyWeatherCollection
+    protected function tryGetWeather(string $city): DailyWeatherCollection
     {
         $key = $this->getLocationKey($city);
 
@@ -43,7 +43,7 @@ class AccuWeatherApi implements WeatherSource
         return Http::get('http://dataservice.accuweather.com/locations/v1/cities/search', [
             'apikey' => config('services.weather.accu-weather'),
             'q' => $city,
-        ])->json('0.Key');
+        ])->throw()->json('0.Key');
     }
 
     public function getSourceName(): string
