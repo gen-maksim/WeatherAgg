@@ -4,10 +4,14 @@ namespace App\Services\WeatherApis;
 
 use App\ValueObjects\DailyWeatherCollection;
 use App\ValueObjects\OneDayWeather;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class AccuWeatherApi extends BaseWeatherApi
 {
+    /**
+     * @throws RequestException
+     */
     protected function tryGetWeather(string $city): DailyWeatherCollection
     {
         $key = $this->getLocationKey($city);
@@ -30,18 +34,30 @@ class AccuWeatherApi extends BaseWeatherApi
         return $result;
     }
 
+    /**
+     * @throws RequestException
+     */
     public function getWeather($key): array
     {
-        return Http::get("http://dataservice.accuweather.com/forecasts/v1/daily/5day/$key", [
-            'apikey' => config('services.weather.accu-weather'),
+        $url = config('services.weather.accu_weather.base_url')
+            . config('services.weather.accu_weather.forecast_url') . $key;
+
+        return Http::get($url, [
+            'apikey' => config('services.weather.accu_weather.key'),
             'metric' => 'true',
-        ])->json('DailyForecasts');
+        ])->throw()->json('DailyForecasts');
     }
 
+    /**
+     * @throws RequestException
+     */
     public function getLocationKey(string $city): string
     {
-        return Http::get('http://dataservice.accuweather.com/locations/v1/cities/search', [
-            'apikey' => config('services.weather.accu-weather'),
+        $url = config('services.weather.accu_weather.base_url')
+            . config('services.weather.accu_weather.city_search');
+
+        return Http::get($url, [
+            'apikey' => config('services.weather.accu_weather.key'),
             'q' => $city,
         ])->throw()->json('0.Key');
     }

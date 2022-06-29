@@ -4,10 +4,14 @@ namespace App\Services\WeatherApis;
 
 use App\ValueObjects\DailyWeatherCollection;
 use App\ValueObjects\OneDayWeather;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class WeatherApiApi extends BaseWeatherApi
 {
+    /**
+     * @throws RequestException
+     */
     protected function tryGetWeather(string $city): DailyWeatherCollection
     {
         $rawData = $this->getWeatherByCity($city);
@@ -15,13 +19,19 @@ class WeatherApiApi extends BaseWeatherApi
         return $this->makeWeatherCollection($rawData);
     }
 
+    /**
+     * @throws RequestException
+     */
     private function getWeatherByCity(string $city)
     {
-        return Http::get('http://api.weatherapi.com/v1/forecast.json', [
-            'key' => config('services.weather.weather-api'),
+        $url = config('services.weather.weather_api.base_url')
+            . config('services.weather.weather_api.forecast_url');
+
+        return Http::get($url, [
+            'key' => config('services.weather.weather_api.key'),
             'q' => $city,
             'days' => 5
-        ])->json('forecast.forecastday');
+        ])->throw()->json('forecast.forecastday');
     }
 
     private function makeWeatherCollection($rawData): DailyWeatherCollection

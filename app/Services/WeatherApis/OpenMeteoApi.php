@@ -5,6 +5,7 @@ namespace App\Services\WeatherApis;
 use App\Services\CityCoordinatesApi;
 use App\ValueObjects\DailyWeatherCollection;
 use App\ValueObjects\OneDayWeather;
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class OpenMeteoApi extends BaseWeatherApi
@@ -16,6 +17,9 @@ class OpenMeteoApi extends BaseWeatherApi
         $this->cityCoordinatesApi = $cityCoordinatesApi;
     }
 
+    /**
+     * @throws RequestException
+     */
     protected function tryGetWeather(string $city): DailyWeatherCollection
     {
         $coordinates = $this->cityCoordinatesApi->getCoordinates($city);
@@ -40,14 +44,20 @@ class OpenMeteoApi extends BaseWeatherApi
         return $result;
     }
 
+    /**
+     * @throws RequestException
+     */
     public function getWeatherByCords(array $coords): array
     {
-        return Http::get('https://api.open-meteo.com/v1/forecast', [
+        $url = config('services.weather.open_meteo.base_url')
+            . config('services.weather.open_meteo.forecast_url');
+
+        return Http::get($url, [
             'longitude' => $coords['lon'],
             'latitude' => $coords['lat'],
             'daily' => 'temperature_2m_max',
             'timezone' => 'UTC'
-        ])->json('daily');
+        ])->throw()->json('daily');
     }
 
     public function getSourceName(): string

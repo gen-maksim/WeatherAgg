@@ -2,16 +2,23 @@
 
 namespace App\Services;
 
+use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 
 class CityCoordinatesApi
 {
+    /**
+     * @throws RequestException
+     */
     public function getCoordinates(string $city): array
     {
-        $response = Http::get('http://api.positionstack.com/v1/forward', [
-            'access_key' => config('services.misc.city'),
+        $url = config('services.misc.coordinates_api.base_url')
+            . config('services.misc.coordinates_api.city_coords');
+
+        $response = Http::get($url, [
+            'access_key' => config('services.misc.coordinates_api.key'),
             'query' => $city
-        ])->json('data.0');
+        ])->throw()->json('data.0');
 
         return [
             'lat' => $response['latitude'],

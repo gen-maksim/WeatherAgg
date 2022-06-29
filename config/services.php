@@ -31,11 +31,28 @@ return [
     ],
 
     'weather' => [
-        'accu-weather' => env('ACCW_KEY'),
-        'weather-api' => env('WEATHERAPI_KEY'),
+        'accu_weather' => [
+            'key' => env('ACCW_KEY'),
+            'base_url' => 'http://dataservice.accuweather.com/',
+            'forecast_url' => 'forecasts/v1/daily/5day/',
+            'city_search' => 'locations/v1/cities/search',
+        ],
+        'open_meteo' => [
+            'base_url' => 'https://api.open-meteo.com/v1/',
+            'forecast_url' => 'forecast'
+        ],
+        'weather_api' =>[
+            'key' => env('WEATHERAPI_KEY'),
+            'base_url' => 'http://api.weatherapi.com/v1/',
+            'forecast_url' => 'forecast.json',
+        ],
     ],
 
     'misc' => [
-        'city' => env('CITY_KEY'),
+        'coordinates_api' => [
+            'key' => env('CITY_KEY'),
+            'base_url' => 'http://api.positionstack.com/v1/',
+            'city_coords' => 'forward',
+        ],
     ],
 ];
