@@ -3,6 +3,8 @@
 ####################---Install Composer---####################
 composer install -vvv --no-cache --no-interaction
 
+php artisan migrate
+
 echo '###---Running tests ...'
 php artisan test --parallel
 
