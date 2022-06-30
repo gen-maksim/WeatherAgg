@@ -11,4 +11,5 @@ class RequestStat extends Model
 
     public $timestamps = false;
     protected $fillable = ['endpoint', 'date'];
+    protected $dates = ['date'];
 }

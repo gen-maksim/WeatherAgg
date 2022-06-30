@@ -8,8 +8,7 @@ class CreateRequestStatsTable extends Migration
     public function up(): void
     {
         Schema::create('request_stats', function (\Jenssegers\Mongodb\Schema\Blueprint $collection) {
-            $collection->index('date');
-            $collection->index('endpoint');
+            $collection->index(['date', 'endpoint']);
         });
     }
 
