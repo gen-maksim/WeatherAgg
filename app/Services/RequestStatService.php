@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\RequestStat;
 use Illuminate\Support\Carbon;
+use MongoDB\BSON\UTCDateTime;
 
 class RequestStatService
 {
@@ -21,18 +22,18 @@ class RequestStatService
             $match = [];
         } else {
             switch ($mode) {
-                case 'day': $date = Carbon::now()->subDay()->toISOString();
+                case 'day': $date = Carbon::now()->subDay();
                 break;
-                case 'week': $date = Carbon::now()->subWeek()->toISOString();
+                case 'week': $date = Carbon::now()->subWeek();
                 break;
-                case 'month': $date = Carbon::now()->subMonth()->toISOString();
+                case 'month': $date = Carbon::now()->subMonth();
                 break;
             }
 
             $match = [[
                 '$match'=> [
                     'date' => [
-                        '$gte' => $date
+                        '$gte' => new UTCDateTime($date)
                     ]
                 ]
             ]];
